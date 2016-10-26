@@ -2,72 +2,84 @@
 
 #include "sched.h"
 
-void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
+static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 
 }
 
-void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
+static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 
 }
 
-void yield_task_wrr(struct rq *rq)
+static void yield_task_wrr(struct rq *rq)
 {
 
 }
 
-bool yield_to_task_wrr(struct rq *rq, struct task_struct *p, bool preempt)
+static bool yield_to_task_wrr(
+	struct rq *rq,
+	struct task_struct *p,
+	bool preempt
+)
 {
 	return 0;
 }
 
-void check_preempt_curr_wrr(struct rq *rq, struct task_struct *p, int flags)
+static void check_preempt_curr_wrr(
+	struct rq *rq,
+	struct task_struct *p,
+	int flags
+)
 {
 
 }
 
-struct task_struct *pick_next_task_wrr(struct rq *rq)
+static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
 	return NULL;
 }
 
-void put_prev_task_wrr(struct rq *rq, struct task_struct *p)
+static void put_prev_task_wrr(struct rq *rq, struct task_struct *p)
 {
 
 }
 
-void set_curr_task_wrr(struct rq *rq)
+static void set_curr_task_wrr(struct rq *rq)
 {
 
 }
 
-void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
+static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 {
 
 }
 
-void task_fork_wrr(struct task_struct *p)
+static void task_fork_wrr(struct task_struct *p)
 {
 
 }
 
-void switched_from_wrr(struct rq *this_rq, struct task_struct *task)
+static void switched_from_wrr(struct rq *this_rq, struct task_struct *task)
 {
 
 }
 
-void switched_to_wrr(struct rq *this_rq, struct task_struct *task)
+static void switched_to_wrr(struct rq *this_rq, struct task_struct *task)
 {
 
 }
 
-void prio_changed_wrr(struct rq *this_rq, struct task_struct *task, int oldprio)
+static void prio_changed_wrr(
+	struct rq *this_rq,
+	struct task_struct *task,
+	int oldprio
+)
 {
 
 }
 
-unsigned int get_rr_interval_wrr(struct rq *rq, struct task_struct *task)
+static unsigned int get_rr_interval_wrr(struct rq *rq, struct task_struct *task)
 {
 	return 0;
 }
