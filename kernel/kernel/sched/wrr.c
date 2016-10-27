@@ -1,6 +1,23 @@
-
+/*
+ * Weighted Round Robin Scheduling Class (mapped to the SCHED_WRR policy)
+ */
 
 #include "sched.h"
+
+void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
+{
+	struct wrr_queues *array;
+	int i;
+
+	array = &wrr_rq->wrr_q;
+	for (i = 0; i < MAX_WRR_WEIGHT; i++)
+		INIT_LIST_HEAD(array->queues + i);
+}
+
+int alloc_wrr_sched_group(struct task_group *tg, struct task_group *parent)
+{
+	return 1;
+}
 
 static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
