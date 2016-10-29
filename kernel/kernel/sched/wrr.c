@@ -35,13 +35,17 @@ static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
 static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	int weight = should_boost(p) ? 0 : 9;
+	int weight = wrr_weight;
+
+	if (!should_boost(p))
+		weight = 0;
 	enqueue_task_wrr_internal(rq, p, weight, flags);
 }
 
 
 static void
-enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags, int weight)
+enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
+	int weight)
 {
 	p->wrr.weight = weight;
 	struct sched_wrr_entity *wrr_se	= &p->wrr;
