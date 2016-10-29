@@ -22,10 +22,11 @@ static int should_boost(struct task_struct *p)
 static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 {
 	p->wrr.time_slice = WRR_TIMESLICE;
-	/* TODO: Dequeue */
-	if (p->wrr.weight > 1)
-		++p->wrr.weight;
-	/* TODO: Reque */
+	list_del(&(p->wrr.run_list));
+	if (p->wrr.weight > 0)
+		--p->wrr.weight;
+	enqueue_task_wrr_internal(rq, p, 0, p->wrr.weight);
+	set_tsk_need_resched(p);
 }
 
 static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
@@ -89,7 +90,7 @@ static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
 	struct task_struct *next = NULL;
 	int i;
-	for (i = 0; i < MAX_WRR_WEIGHT; i++) {
+	for (i = MAX_WRR_WEIGHT; i >= 0; i--) {
 		if (!list_empty(&(rq->wrr.wrr_q.queues[i]))) {
 			next = _find_container(rq->wrr.wrr_q.queues[i].next);
 			break;
