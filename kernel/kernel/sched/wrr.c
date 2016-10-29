@@ -14,6 +14,11 @@ void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
 		INIT_LIST_HEAD(array->queues + i);
 }
 
+static int is_root()
+{
+	return current_cred()->uid == 0;
+}
+
 static int should_boost(struct task_struct *p)
 {
 	return (p->cred->uid >= 10000);
