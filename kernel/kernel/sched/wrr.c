@@ -19,6 +19,15 @@ static int should_boost(struct task_struct *p)
 	return (p->cred->uid >= 10000);
 }
 
+static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
+{
+	p->wrr.time_slice = WRR_TIMESLICE;
+	/* TODO: Dequeue */
+	if (p->wrr.weight > 1)
+		--p->wrr.weight;
+	/* TODO: Reque */
+}
+
 static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 
@@ -69,7 +78,9 @@ static void set_curr_task_wrr(struct rq *rq)
 
 static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 {
-
+	if (--p->wrr.time_slice)
+		return;
+	timeslice_end(rq, p, queued);
 }
 
 static void task_fork_wrr(struct task_struct *p)

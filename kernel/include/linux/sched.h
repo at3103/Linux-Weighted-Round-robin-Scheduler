@@ -1022,6 +1022,10 @@ struct sched_rt_entity {
 #endif
 };
 
+struct sched_wrr_entity {
+	unsigned int time_slice;
+	unsigned int weight;
+};
 
 struct rcu_node;
 
@@ -1050,6 +1054,7 @@ struct task_struct {
 	const struct sched_class *sched_class;
 	struct sched_entity se;
 	struct sched_rt_entity rt;
+	struct sched_wrr_entity wrr;
 #ifdef CONFIG_CGROUP_SCHED
 	struct task_group *sched_task_group;
 #endif
