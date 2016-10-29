@@ -14,11 +14,6 @@ void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
 		INIT_LIST_HEAD(array->queues + i);
 }
 
-static int is_root(void)
-{
-	return current_cred()->uid == 0;
-}
-
 static int should_boost(struct task_struct *p)
 {
 	return (p->cred->uid >= 10000);
@@ -35,11 +30,6 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 
 static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
 {
-	dequeue_rt_task(wrr_se);
-	/* Have to change the function if necessary : same can be used */
-	for_each_sched_rt_entity(wrr_se)
-		/* Have to change the function if necessary */
-		__enqueue_rt_entity(wrr_se, head);
 }
 
 static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
@@ -60,7 +50,7 @@ static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 
 }
 
-struct task_struct *_find_container(sturct list_head *cursor)
+struct task_struct *_find_container(struct list_head *cursor)
 {
 	return container_of(list_entry(cursor, struct sched_wrr_entity,
 				       run_list),
@@ -70,26 +60,6 @@ struct task_struct *_find_container(sturct list_head *cursor)
 
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	struct sched_wrr_entity *wrr_se = &p->wrr;
-	struct list_head *cursor = NULL;
-	struct task_struct *found = NULL;
-	int i;
-	int did_find;
-
-	for (i = 0; i < MAX_WRR_WEIGHT; i++) {
-		list_for_each(cursor, (wrr_se->wrr_q).queues[i]) {
-			found = _find_container(cursor);
-			if (found == p) {
-				did_find = 1;
-				break;
-			}
-		}
-		if (did_find)
-			break;
-	}
-
-	if (did_find)
-		list_del(cursor);
 }
 
 static void yield_task_wrr(struct rq *rq)
@@ -120,8 +90,8 @@ static struct task_struct *pick_next_task_wrr(struct rq *rq)
 	struct task_struct *next = NULL;
 	int i;
 	for (i = 0; i < MAX_WRR_WEIGHT; i++) {
-		if (!list_empty(rq->wrr.wrr_q->queues[i])) {
-			next = _find_container(rq->wrr.wrr_q->queues[i].next);
+		if (!list_empty(&(rq->wrr.wrr_q.queues[i]))) {
+			next = _find_container(rq->wrr.wrr_q.queues[i].next);
 			break;
 		}
 	}

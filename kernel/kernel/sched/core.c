@@ -8097,8 +8097,15 @@ SYSCALL_DEFINE1(get_wrr_info, struct wrr_info *, info)
 	return 0;
 }
 
+static int is_root(void)
+{
+	return current_cred()->uid == 0;
+}
+
 SYSCALL_DEFINE1(set_wrr_weight, int, boosted_weight)
 {
+	if (!is_root())
+		return -EPERM;
 	return 0;
 }
 
