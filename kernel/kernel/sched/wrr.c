@@ -19,13 +19,39 @@ static int should_boost(struct task_struct *p)
 	return (p->cred->uid >= 10000);
 }
 
+static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
+{
+	dequeue_rt_task(wrr_se);
+	for_each_sched_rt_entity (wrr_se)//Have to change the function if necessary : same can be used
+		__enqueue_rt_entity(wrr_se, head);//Have to change the function if necessary
+}
+
 static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
+	struct sched_wrr_entity *wrr_se	= &p->wrr;
+
+	if (flags & ENQUEUE_WAKEUP)
+		wrr_se->timeout = 0;
+
+	enqueue_wrr_entity(wrr_se, flags & ENQUEUE_HEAD);
+
+/*	if (!task_current(rq,p) && p->nr_cpus_allowed > 1) //for multiple processors
+		enqueue_pushable_task(rq,p);
+*/
+
+	inc_nr_running(rq);
 
 }
 
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
+	struct sched_wrr_entity *wrr_se = &p->wrr;
+
+	update_curr_wrr(rq);
+	dequeue_wrr_entity(wrr_se);
+
+	dequeue_pushable_task(rq, p);
+	dec_nr_running(rq);
 
 }
 
