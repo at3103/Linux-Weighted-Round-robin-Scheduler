@@ -14,3 +14,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <asm-generic/unistd.h>
+__SYSCALL(244, sys_get_wrr_info)
+__SYSCALL(245, sys_set_wrr_weight)
