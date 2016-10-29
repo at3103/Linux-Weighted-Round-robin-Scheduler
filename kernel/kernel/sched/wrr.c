@@ -60,6 +60,7 @@ struct task_struct *_find_container(struct list_head *cursor)
 
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
+	list_del(&(p->wrr.run_list));
 }
 
 static void yield_task_wrr(struct rq *rq)
