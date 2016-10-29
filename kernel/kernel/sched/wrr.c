@@ -56,9 +56,13 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 			found = container_of(
 				list_entry(cursor, struct sched_wrr_entity,
 					   run_list), struct task_struct, wrr);
-			if (found == p)
+			if (found == p) {
 				did_find = 1;
+				break;
+			}
 		}
+		if (did_find)
+			break;
 	}
 	if (did_find)
 		list_del(cursor);
