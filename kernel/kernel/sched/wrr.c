@@ -37,7 +37,7 @@ static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
 static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	int weight = wrr_weight - 1;
+	int weight = wrr_weight;
 
 	if (!should_boost(p))
 		weight = 0;
