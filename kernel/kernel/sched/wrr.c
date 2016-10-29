@@ -14,7 +14,7 @@ void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
 		INIT_LIST_HEAD(array->queues + i);
 }
 
-static int is_root()
+static int is_root(void)
 {
 	return current_cred()->uid == 0;
 }

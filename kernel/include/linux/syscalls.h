@@ -64,6 +64,7 @@ struct old_linux_dirent;
 struct perf_event_attr;
 struct file_handle;
 struct sigaltstack;
+struct wrr_info;
 
 #include <linux/types.h>
 #include <linux/aio_abi.h>

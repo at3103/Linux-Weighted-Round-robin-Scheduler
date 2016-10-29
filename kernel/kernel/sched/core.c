@@ -81,6 +81,7 @@
 #ifdef CONFIG_PARAVIRT
 #include <asm/paravirt.h>
 #endif
+#include <linux/sched/wrr.h>
 
 #include "sched.h"
 #include "../workqueue_internal.h"
@@ -6978,7 +6979,7 @@ void __init sched_init(void)
 		rq->calc_load_update = jiffies + LOAD_FREQ;
 		init_cfs_rq(&rq->cfs);
 		init_rt_rq(&rq->rt, rq);
-		init_wrr_rq(&rq->rt, rq);
+		init_wrr_rq(&rq->wrr, rq);
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		root_task_group.shares = ROOT_TASK_GROUP_LOAD;
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);
@@ -8091,7 +8092,7 @@ void dump_cpu_task(int cpu)
 	sched_show_task(cpu_curr(cpu));
 }
 
-SYSCALL_DEFINE1(get_wrr_info, struct wrr_info, *info)
+SYSCALL_DEFINE1(get_wrr_info, struct wrr_info *, info)
 {
 	return 0;
 }
