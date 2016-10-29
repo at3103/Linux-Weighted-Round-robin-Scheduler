@@ -81,7 +81,6 @@
 #ifdef CONFIG_PARAVIRT
 #include <asm/paravirt.h>
 #endif
-#include <linux/sched/wrr.h>
 
 #include "sched.h"
 #include "../workqueue_internal.h"
@@ -3636,6 +3635,9 @@ void rt_mutex_setprio(struct task_struct *p, int prio)
 	else
 		p->sched_class = &fair_sched_class;
 
+	if (p->policy == SCHED_WRR)
+		p->sched_class = &wrr_sched_class;
+
 	p->prio = prio;
 
 	if (running)
@@ -3827,6 +3829,8 @@ __setscheduler(struct rq *rq, struct task_struct *p, int policy, int prio)
 		p->sched_class = &rt_sched_class;
 	else
 		p->sched_class = &fair_sched_class;
+	if (p->policy == SCHED_WRR)
+		p->sched_class = &wrr_sched_class;
 	set_load_weight(p);
 }
 
