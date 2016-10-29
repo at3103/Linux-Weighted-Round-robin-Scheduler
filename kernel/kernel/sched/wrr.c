@@ -55,9 +55,12 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 			found = list_entry(cursor, struct task_struct,
 					   wrr.run_list);
 			if (found == p)
-				list_del(cursor);
+				break;
 		}
 	}
+
+	if (found != NULL)
+		list_del(cursor);
 }
 
 static void yield_task_wrr(struct rq *rq)
