@@ -49,15 +49,19 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	struct list_head *cursor = NULL;
 	struct task_struct *found = NULL;
 	int i;
+	int did_find;
 
 	for (i = 0; i < MAX_WRR_WEIGHT; i++) {
 		list_for_each(cursor, (wrr_se->wrr_q).queues[i]) {
-			found = list_entry(cursor, struct task_struct,
-					   wrr.run_list);
+			found = container_of(
+				list_entry(cursor, struct sched_wrr_entity,
+					   run_list), struct task_struct, wrr);
 			if (found == p)
-				list_del(cursor);
+				did_find = 1;
 		}
 	}
+	if (did_find)
+		list_del(cursor);
 }
 
 static void yield_task_wrr(struct rq *rq)
