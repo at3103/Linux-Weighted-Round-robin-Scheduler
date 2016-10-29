@@ -21,6 +21,20 @@ static int should_boost(struct task_struct *p)
 	return (p->cred->uid >= 10000);
 }
 
+static void
+enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
+	int weight)
+{
+	struct list_head wrr_q;
+
+	p->wrr.weight = weight;
+	wrr_q = rq->wrr.wrr_q.queues[weight];
+	list_add_tail(&p->wrr.run_list, &wrr_q);
+	inc_nr_running(rq);
+
+}
+
+
 static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 {
 	p->wrr.time_slice = WRR_TIMESLICE;
@@ -29,10 +43,6 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 		--p->wrr.weight;
 	enqueue_task_wrr_internal(rq, p, 0, p->wrr.weight);
 	set_tsk_need_resched(p);
-}
-
-static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
-{
 }
 
 static void
@@ -45,20 +55,6 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	enqueue_task_wrr_internal(rq, p, weight, flags);
 }
 
-
-static void
-enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
-	int weight)
-{
-	p->wrr.weight = weight;
-	struct sched_wrr_entity *wrr_se	= &p->wrr;
-	struct wrr_queues *wrr_q;
-
-	wrr_q = rq->wrr->wrr_q.queues[weight];
-	list_add_tail(p->wrr.run_list, wrr_q);
-	inc_nr_running(rq);
-
-}
 
 struct task_struct *_find_container(struct list_head *cursor)
 {
