@@ -23,6 +23,7 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	struct list_head wrr_q;
 
 	p->wrr.weight = weight;
+	p->wrr.time_slice = WRR_TIMESLICE * weight * 10;
 	wrr_q = rq->wrr.queue;
 	list_add_tail(&p->wrr.run_list, &wrr_q);
 	inc_nr_running(rq);
