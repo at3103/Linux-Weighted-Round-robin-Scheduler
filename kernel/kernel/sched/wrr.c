@@ -8,12 +8,7 @@ int wrr_weight = MAX_WRR_WEIGHT - 1;
 
 void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
 {
-	struct wrr_queues *array;
-	int i;
-
-	array = &wrr_rq->wrr_q;
-	for (i = 0; i < MAX_WRR_WEIGHT; i++)
-		INIT_LIST_HEAD(array->queues + i);
+	INIT_LIST_HEAD(&wrr_rq->queue);
 }
 
 static int should_boost(struct task_struct *p)
@@ -29,10 +24,9 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 
 	p->wrr.weight = weight;
 	p->wrr.time_slice = WRR_TIMESLICE * weight * 10;
-	wrr_q = rq->wrr.wrr_q.queues[weight];
+	wrr_q = rq->wrr.queue;
 	list_add_tail(&p->wrr.run_list, &wrr_q);
 	inc_nr_running(rq);
-
 }
 
 
@@ -41,6 +35,7 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 	list_del(&(p->wrr.run_list));
 	if (p->wrr.weight > 0)
 		--p->wrr.weight;
+	p->wrr.time_slice = WRR_TIMESLICE * p->wrr.weight;
 	enqueue_task_wrr_internal(rq, p, 0, p->wrr.weight);
 	set_tsk_need_resched(p);
 }
@@ -59,9 +54,8 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 struct task_struct *_find_container(struct list_head *cursor)
 {
 	return container_of(list_entry(cursor, struct sched_wrr_entity,
-				       run_list),
-			    struct task_struct, wrr);
-
+					run_list),
+			struct task_struct, wrr);
 }
 
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
@@ -100,8 +94,8 @@ static struct task_struct *pick_next_task_wrr(struct rq *rq)
 	struct task_struct *next = NULL;
 	int i;
 	for (i = MAX_WRR_WEIGHT; i >= 0; i--) {
-		if (!list_empty(&(rq->wrr.wrr_q.queues[i]))) {
-			next = _find_container(rq->wrr.wrr_q.queues[i].next);
+		if (!list_empty(&(rq->wrr.queue))) {
+			next = _find_container(rq->wrr.queue.next);
 			break;
 		}
 	}
