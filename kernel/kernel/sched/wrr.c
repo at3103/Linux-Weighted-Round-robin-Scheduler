@@ -32,7 +32,7 @@ static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
 {
 }
 
-static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags. int weight)
+static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int weight)
 {
 	p->wrr.weight = weight;
 	struct sched_wrr_entity *wrr_se	= &p->wrr;
