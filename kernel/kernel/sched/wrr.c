@@ -19,11 +19,22 @@ static int should_boost(struct task_struct *p)
 	return (p->cred->uid >= 10000);
 }
 
+static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
+{
+	p->wrr.time_slice = WRR_TIMESLICE;
+	/* TODO: Dequeue */
+	if (p->wrr.weight > 1)
+		--p->wrr.weight;
+	/* TODO: Reque */
+}
+
 static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
 {
 	dequeue_rt_task(wrr_se);
-	for_each_sched_rt_entity (wrr_se)//Have to change the function if necessary : same can be used
-		__enqueue_rt_entity(wrr_se, head);//Have to change the function if necessary
+	/* Have to change the function if necessary : same can be used */
+	for_each_sched_rt_entity(wrr_se)
+		/* Have to change the function if necessary */
+		__enqueue_rt_entity(wrr_se, head);
 }
 
 static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
@@ -35,7 +46,8 @@ static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 
 	enqueue_wrr_entity(wrr_se, flags & ENQUEUE_HEAD);
 
-/*	if (!task_current(rq,p) && p->nr_cpus_allowed > 1) //for multiple processors
+	/* for multiple processors */
+/*	if (!task_current(rq,p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq,p);
 */
 
@@ -95,7 +107,9 @@ static void set_curr_task_wrr(struct rq *rq)
 
 static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 {
-
+	if (--p->wrr.time_slice)
+		return;
+	timeslice_end(rq, p, queued);
 }
 
 static void task_fork_wrr(struct task_struct *p)
