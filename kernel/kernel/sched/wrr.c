@@ -64,7 +64,9 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 
 static void yield_task_wrr(struct rq *rq)
 {
-
+	struct task_struct *curr = rq->curr;
+	dequeue_task_wrr(rq, curr, 0);
+	enqueue_task_wrr(rq, curr, 0);
 }
 
 static bool yield_to_task_wrr(
