@@ -28,6 +28,7 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	struct list_head wrr_q;
 
 	p->wrr.weight = weight;
+	p->wrr.time_slice = WRR_TIMESLICE * weight * 10;
 	wrr_q = rq->wrr.wrr_q.queues[weight];
 	list_add_tail(&p->wrr.run_list, &wrr_q);
 	inc_nr_running(rq);
@@ -37,7 +38,6 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 
 static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 {
-	p->wrr.time_slice = WRR_TIMESLICE;
 	list_del(&(p->wrr.run_list));
 	if (p->wrr.weight > 0)
 		--p->wrr.weight;
