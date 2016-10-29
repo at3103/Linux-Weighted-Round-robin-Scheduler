@@ -46,13 +46,18 @@ static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	struct sched_wrr_entity *wrr_se = &p->wrr;
+	struct list_head *cursor = NULL;
+	struct task_struct *found = NULL;
+	int i;
 
-	update_curr_wrr(rq);
-	dequeue_wrr_entity(wrr_se);
-
-	dequeue_pushable_task(rq, p);
-	dec_nr_running(rq);
-
+	for (i = 0; i < MAX_WRR_WEIGHT; i++) {
+		list_for_each(cursor, (wrr_se->wrr_q).queues[i]) {
+			found = list_entry(cursor, struct task_struct,
+					   wrr.run_list);
+			if (found == p)
+				list_del(cursor);
+		}
+	}
 }
 
 static void yield_task_wrr(struct rq *rq)
