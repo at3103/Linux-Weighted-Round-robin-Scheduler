@@ -4,6 +4,8 @@
 
 #include "sched.h"
 
+int wrr_weight = MAX_WRR_WEIGHT - 1;
+
 void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
 {
 	struct wrr_queues *array;
@@ -35,7 +37,7 @@ static void enqueue_wrr_entity(struct sched_wrr_entity *wrr_se, bool head)
 static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	int weight = MAX_WRR_WEIGHT - 1;
+	int weight = wrr_weight - 1;
 
 	if (!should_boost(p))
 		weight = 0;
@@ -52,7 +54,7 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	struct wrr_queues *wrr_q;
 
 	wrr_q = rq->wrr->wrr_q.queues[weight];
-	list_add_tail(p, wrr_q);
+	list_add_tail(p->wrr.run_list, wrr_q);
 	inc_nr_running(rq);
 
 }
