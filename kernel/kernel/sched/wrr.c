@@ -43,6 +43,14 @@ static void enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 
 }
 
+struct task_struct *_find_container(sturct list_head *cursor)
+{
+	return container_of(list_entry(cursor, struct sched_wrr_entity,
+				       run_list),
+			    struct task_struct, wrr);
+
+}
+
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	struct sched_wrr_entity *wrr_se = &p->wrr;
@@ -53,9 +61,7 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 
 	for (i = 0; i < MAX_WRR_WEIGHT; i++) {
 		list_for_each(cursor, (wrr_se->wrr_q).queues[i]) {
-			found = container_of(
-				list_entry(cursor, struct sched_wrr_entity,
-					   run_list), struct task_struct, wrr);
+			found = _find_container(cursor);
 			if (found == p) {
 				did_find = 1;
 				break;
@@ -64,6 +70,7 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 		if (did_find)
 			break;
 	}
+
 	if (did_find)
 		list_del(cursor);
 }
