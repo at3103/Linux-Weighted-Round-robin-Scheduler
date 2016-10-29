@@ -29,7 +29,7 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 	p->wrr.time_slice = WRR_TIMESLICE;
 	/* TODO: Dequeue */
 	if (p->wrr.weight > 1)
-		--p->wrr.weight;
+		++p->wrr.weight;
 	/* TODO: Reque */
 }
 
@@ -97,7 +97,15 @@ static void check_preempt_curr_wrr(
 
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
-	return NULL;
+	struct task_struct *next = NULL;
+	int i;
+	for (i = 0; i < MAX_WRR_WEIGHT; i++) {
+		if (!list_empty(rq->wrr.wrr_q->queues[i])) {
+			next = _find_container(rq->wrr.wrr_q->queues[i].next);
+			break;
+		}
+	}
+	return next;
 }
 
 static void put_prev_task_wrr(struct rq *rq, struct task_struct *p)
