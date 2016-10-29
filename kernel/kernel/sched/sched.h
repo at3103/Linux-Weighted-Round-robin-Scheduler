@@ -339,12 +339,8 @@ static inline int rt_bandwidth_enabled(void)
 	return sysctl_sched_rt_runtime >= 0;
 }
 
-struct wrr_queues {
-	struct list_head queues[MAX_WRR_WEIGHT];
-};
-
 struct wrr_rq {
-	struct wrr_queues wrr_q;
+	struct list_head queue;
 };
 
 /* Real-Time classes' related field in a runqueue: */
