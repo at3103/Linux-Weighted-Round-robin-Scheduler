@@ -3,6 +3,7 @@
  */
 
 #include "sched.h"
+#include <linux/printk.h>
 
 int wrr_weight = MAX_WRR_WEIGHT - 1;
 
@@ -61,7 +62,7 @@ struct task_struct *_find_container(struct list_head *cursor)
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	list_del(&(p->wrr.run_list));
-	inc_nr_running(rq);
+	dec_nr_running(rq);
 }
 
 static void yield_task_wrr(struct rq *rq)
