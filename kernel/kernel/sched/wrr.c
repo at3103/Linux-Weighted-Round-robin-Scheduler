@@ -90,16 +90,21 @@ static void check_preempt_curr_wrr(
 
 }
 
+int xxx;
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
 	struct task_struct *next = NULL;
 	int i;
+	if (xxx)
+		return NULL;
 	for (i = MAX_WRR_WEIGHT; i >= 0; i--) {
 		if (!list_empty(&(rq->wrr.queue))) {
 			next = _find_container(rq->wrr.queue.next);
 			break;
 		}
 	}
+	if (!xxx)
+		xxx = !xxx;
 	return next;
 }
 
