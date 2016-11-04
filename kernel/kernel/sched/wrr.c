@@ -108,12 +108,8 @@ static struct task_struct *pick_next_task_wrr(struct rq *rq)
 	if (xxx >= 2)
 		return NULL;
 	printk(KERN_DEFAULT "Pick task");
-	for (i = MAX_WRR_WEIGHT; i >= 0; i--) {
-		if (!list_empty(&(rq->wrr.queue))) {
-			next = _find_container(rq->wrr.queue.next);
-			break;
-		}
-	}
+	if (!list_empty(&(rq->wrr.queue)))
+		next = _find_container(rq->wrr.queue.next);
 	if (next)
 		xxx++;
 	return next;
