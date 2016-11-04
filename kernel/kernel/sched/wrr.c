@@ -216,6 +216,7 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 		deactivate_task(src_rq, p, 0);
 		set_task_cpu(p, cur_cpu);
 		activate_task(cur_rq, p, 0);
+		double_unlock_balance(cur_rq, src_rq);
 		break;
 	}
 
