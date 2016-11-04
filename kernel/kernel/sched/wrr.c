@@ -7,6 +7,11 @@
 
 int wrr_weight = MAX_WRR_WEIGHT - 1;
 
+void set_wrr_weight(int weight)
+{
+	wrr_weight = weight - 1;
+}
+
 void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
 {
 	INIT_LIST_HEAD(&wrr_rq->queue);
@@ -21,7 +26,7 @@ static void
 enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	int weight)
 {
-	/* printk(KERN_DEFAULT "Enqueued task i"); */
+	printk(KERN_DEFAULT "Enqueued task i");
 	struct list_head wrr_q;
 
 	p->wrr.weight = weight;
@@ -45,7 +50,7 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	/* printk(KERN_DEFAULT "Enqueued task"); */
+	printk(KERN_DEFAULT "Enqueued task");
 	int weight = wrr_weight;
 
 	if (!should_boost(p))
@@ -63,14 +68,14 @@ struct task_struct *_find_container(struct list_head *cursor)
 
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	/* printk(KERN_DEFAULT "Dequeued task"); */
+	printk(KERN_DEFAULT "Dequeued task");
 	list_del(&(p->wrr.run_list));
 	dec_nr_running(rq);
 }
 
 static void yield_task_wrr(struct rq *rq)
 {
-	/* printk(KERN_DEFAULT "Yield task"); */
+	printk(KERN_DEFAULT "Yield task");
 	struct task_struct *curr = rq->curr;
 	dequeue_task_wrr(rq, curr, 0);
 	enqueue_task_wrr(rq, curr, 0);
@@ -82,7 +87,7 @@ static bool yield_to_task_wrr(
 	bool preempt
 )
 {
-	/* printk(KERN_DEFAULT "Yield to task"); */
+	printk(KERN_DEFAULT "Yield to task");
 	return 0;
 }
 
@@ -98,37 +103,37 @@ static void check_preempt_curr_wrr(
 int xxx;
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
-	/* printk(KERN_DEFAULT "Pick task"); */
 	struct task_struct *next = NULL;
 	int i;
-	if (xxx)
+	if (xxx >= 2)
 		return NULL;
+	printk(KERN_DEFAULT "Pick task");
 	for (i = MAX_WRR_WEIGHT; i >= 0; i--) {
 		if (!list_empty(&(rq->wrr.queue))) {
 			next = _find_container(rq->wrr.queue.next);
 			break;
 		}
 	}
-	if (!xxx)
-		xxx = !xxx;
+	if (next)
+		xxx++;
 	return next;
 }
 
 static void put_prev_task_wrr(struct rq *rq, struct task_struct *p)
 {
-	/* printk(KERN_DEFAULT "Put task"); */
+	printk(KERN_DEFAULT "Put task");
 
 }
 
 static void set_curr_task_wrr(struct rq *rq)
 {
-	/* printk(KERN_DEFAULT "Set task"); */
+	printk(KERN_DEFAULT "Set task");
 
 }
 
 static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 {
-	/* printk(KERN_DEFAULT "Tick task"); */
+	printk(KERN_DEFAULT "Tick task");
 	if (--p->wrr.time_slice)
 		return;
 	timeslice_end(rq, p, queued);
@@ -136,19 +141,19 @@ static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 
 static void task_fork_wrr(struct task_struct *p)
 {
-	/* printk(KERN_DEFAULT "Fork task"); */
+	printk(KERN_DEFAULT "Fork task");
 
 }
 
 static void switched_from_wrr(struct rq *this_rq, struct task_struct *task)
 {
-	/* printk(KERN_DEFAULT "Switch from task"); */
+	printk(KERN_DEFAULT "Switch from task");
 
 }
 
 static void switched_to_wrr(struct rq *this_rq, struct task_struct *task)
 {
-	/* printk(KERN_DEFAULT "Switch to task"); */
+	printk(KERN_DEFAULT "Switch to task");
 
 }
 
@@ -158,13 +163,13 @@ static void prio_changed_wrr(
 	int oldprio
 )
 {
-	/* printk(KERN_DEFAULT "Prio task"); */
+	printk(KERN_DEFAULT "Prio task");
 
 }
 
 static unsigned int get_rr_interval_wrr(struct rq *rq, struct task_struct *task)
 {
-	/* printk(KERN_DEFAULT "Interval task"); */
+	printk(KERN_DEFAULT "Interval task");
 	return 0;
 }
 
