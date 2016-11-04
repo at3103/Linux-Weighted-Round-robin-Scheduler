@@ -75,9 +75,11 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	dec_nr_running(rq);
 
 	/*May be check if it is multi_core or something*/
+	#ifdef CONFIG_SMP
 	if (rq->nr_running == 0)
 		if (pull_task_from_cpus(rq))
 			;/*Handle error*/
+	#endif /*CONFIG_SMP*/
 }
 
 static void yield_task_wrr(struct rq *rq)
