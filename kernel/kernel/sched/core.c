@@ -8105,12 +8105,12 @@ SYSCALL_DEFINE1(get_wrr_info, struct wrr_info *, info)
 	for_each_possible_cpu(cpu) {
 		struct rq *rq;
 		rq = cpu_rq(cpu);
-		wrr_info->nr_running[cpu] = rq->nr_running;
-		wrr_info->total_weight[cpu] = rq->wrr->total_weight;
+		ret_info.nr_running[cpu] = rq->nr_running;
+		ret_info.total_weight[cpu] = rq->wrr.total_weight;
 		cpus++;
 	}
-	ret_info->num_cpus = cpus;
-	copy_to_user(info, ret_info, sizeof(struct wrr_info));
+	ret_info.num_cpus = cpus;
+	copy_to_user(info, &ret_info, sizeof(struct wrr_info));
 	return 0;
 }
 
