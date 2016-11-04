@@ -8109,6 +8109,7 @@ SYSCALL_DEFINE1(set_wrr_weight, int, boosted_weight)
 {
 	if (!is_root())
 		return -EPERM;
+	set_wrr_weight(boosted_weight);
 	return 0;
 }
 

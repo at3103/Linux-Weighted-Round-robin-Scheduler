@@ -14,8 +14,12 @@ int main(void)
 		strerror(errno)
 	);
 	printf("Scheduler: %d", sched_getscheduler(0));
+	int i = 1;
 	while (1) {
-		usleep(10000);
-		printf("ab");
+		if (i == 0) {
+			printf("ab");
+			exit(0);
+		}
+		i++;
 	}
 }

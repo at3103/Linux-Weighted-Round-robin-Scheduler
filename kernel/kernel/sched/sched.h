@@ -1339,6 +1339,8 @@ extern void init_cfs_rq(struct cfs_rq *cfs_rq);
 extern void init_rt_rq(struct rt_rq *rt_rq, struct rq *rq);
 extern void init_wrr_rq(struct wrr_rq *rt_rq, struct rq *rq);
 
+extern void set_wrr_weight(int weight);
+
 extern void account_cfs_bandwidth_used(int enabled, int was_enabled);
 
 #ifdef CONFIG_NO_HZ_COMMON
