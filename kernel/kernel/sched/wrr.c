@@ -11,6 +11,7 @@ void set_wrr_weight(int weight)
 {
 	wrr_weight = weight - 1;
 }
+static int pull_task_from_cpus(struct rq *cur_rq);
 
 void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq)
 {
@@ -32,6 +33,7 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	p->wrr.weight = weight;
 	p->wrr.time_slice = WRR_TIMESLICE * weight * 10;
 	wrr_q = rq->wrr.queue;
+	INIT_LIST_HEAD(&p->wrr.run_list);
 	list_add_tail(&p->wrr.run_list, &wrr_q);
 	inc_nr_running(rq);
 }
@@ -71,12 +73,20 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	printk(KERN_DEFAULT "Dequeued task");
 	list_del(&(p->wrr.run_list));
 	dec_nr_running(rq);
+
+	/*May be check if it is multi_core or something*/
+	#ifdef CONFIG_SMP
+	if (rq->nr_running == 0)
+		if (pull_task_from_cpus(rq))
+			;/*Handle error*/
+	#endif /*CONFIG_SMP*/
 }
 
 static void yield_task_wrr(struct rq *rq)
 {
 	printk(KERN_DEFAULT "Yield task");
 	struct task_struct *curr = rq->curr;
+
 	dequeue_task_wrr(rq, curr, 0);
 	enqueue_task_wrr(rq, curr, 0);
 }
@@ -167,6 +177,53 @@ static unsigned int get_rr_interval_wrr(struct rq *rq, struct task_struct *task)
 {
 	printk(KERN_DEFAULT "Interval task");
 	return 0;
+}
+
+static int pull_task_from_cpus(struct rq *cur_rq)
+{
+	int cur_cpu = cur_rq->cpu, ret = 0, cpu;
+	struct rq *src_rq;
+	struct task_struct *p;
+
+	if (cur_rq->nr_running > 0)
+		return ret;
+
+	for_each_cpu(cpu, cur_rq->rd->rto_mask) {
+
+		if (cpu == cur_cpu)
+			continue;
+
+		src_rq = cur_rq;
+
+		double_lock_balance(cur_rq, src_rq);
+
+		if (src_rq->nr_running < 2) {
+			double_unlock_balance(cur_rq, src_rq);
+			continue;
+		}
+
+		if (cur_rq->nr_running > 0) {
+			double_unlock_balance(cur_rq, src_rq);
+			break;
+		}
+
+		/*Gets the next task from the run queue
+		*of the presently iterating cpu
+		*/
+		p = pick_next_task_wrr(src_rq);
+		ret = 1;
+
+		/*Deactivates, dequeues from the old cpu
+		*and enqueues to the new cpu
+		*/
+		deactivate_task(src_rq, p, 0);
+		set_task_cpu(p, cur_cpu);
+		activate_task(cur_rq, p, 0);
+		double_unlock_balance(cur_rq, src_rq);
+		break;
+	}
+
+	return ret;
 }
 
 
