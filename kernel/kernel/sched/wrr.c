@@ -31,20 +31,19 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	struct list_head wrr_q;
 
 	p->wrr.weight = weight;
-	p->wrr.time_slice = WRR_TIMESLICE * weight * 10;
-	wrr_q = rq->wrr.queue;
+	p->wrr.time_slice = WRR_TIMESLICE * (weight + 1) * 10;
 	INIT_LIST_HEAD(&p->wrr.run_list);
-	list_add_tail(&p->wrr.run_list, &wrr_q);
+	list_add_tail(&p->wrr.run_list, &rq->wrr.queue);
 	inc_nr_running(rq);
 }
 
 
 static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 {
-	list_del(&(p->wrr.run_list));
+	dequeue_task_wrr(rq, p, 0);
 	if (p->wrr.weight > 0)
 		--p->wrr.weight;
-	p->wrr.time_slice = WRR_TIMESLICE * p->wrr.weight;
+	p->wrr.time_slice = WRR_TIMESLICE * (p->wrr.weight + 1) * 10;
 	enqueue_task_wrr_internal(rq, p, 0, p->wrr.weight);
 	set_tsk_need_resched(p);
 }
@@ -52,11 +51,13 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	printk(KERN_DEFAULT "Enqueued task");
+	printk(KERN_DEFAULT "\nEnqueued task %d", (int)p->pid);
 	int weight = wrr_weight;
 
-	if (!should_boost(p))
+	if (!should_boost(p)) {
+		printf("Boosting\n");
 		weight = 0;
+	}
 	enqueue_task_wrr_internal(rq, p, weight, flags);
 }
 
@@ -107,21 +108,16 @@ static void check_preempt_curr_wrr(
 	int flags
 )
 {
-	resched_task(rq->curr);
+	//resched_task(rq->curr);
 }
 
-int xxx;
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
 	struct task_struct *next = NULL;
 	int i;
-	if (xxx >= 2)
-		return NULL;
 	printk(KERN_DEFAULT "Pick task");
 	if (!list_empty(&(rq->wrr.queue)))
 		next = _find_container(rq->wrr.queue.next);
-	if (next)
-		xxx++;
 	return next;
 }
 
