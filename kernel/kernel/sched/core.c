@@ -8097,6 +8097,20 @@ void dump_cpu_task(int cpu)
 
 SYSCALL_DEFINE1(get_wrr_info, struct wrr_info *, info)
 {
+	int cpu;
+	struct wrr_info ret_info;
+	int cpus = 0;
+	int running = 0;
+	int weight = 0;
+	for_each_possible_cpu(cpu) {
+		struct rq *rq;
+		rq = cpu_rq(cpu);
+		wrr_info->nr_running[cpu] = rq->nr_running;
+		wrr_info->total_weight[cpu] = rq->wrr->total_weight;
+		cpus++;
+	}
+	ret_info->num_cpus = cpus;
+	copy_to_user(info, ret_info, sizeof(struct wrr_info));
 	return 0;
 }
 
