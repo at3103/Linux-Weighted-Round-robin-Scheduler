@@ -37,6 +37,19 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	inc_nr_running(rq);
 }
 
+static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
+{
+	printk(KERN_DEFAULT "Dequeued task");
+	list_del(&(p->wrr.run_list));
+	dec_nr_running(rq);
+
+	/*May be check if it is multi_core or something*/
+	#ifdef CONFIG_SMP
+	if (rq->nr_running == 0)
+		if (pull_task_from_cpus(rq))
+			;/*Handle error*/
+	#endif /*CONFIG_SMP*/
+}
 
 static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 {
@@ -55,7 +68,6 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	int weight = wrr_weight;
 
 	if (!should_boost(p)) {
-		printf("Boosting\n");
 		weight = 0;
 	}
 	enqueue_task_wrr_internal(rq, p, weight, flags);
@@ -67,20 +79,6 @@ struct task_struct *_find_container(struct list_head *cursor)
 	return container_of(list_entry(cursor, struct sched_wrr_entity,
 					run_list),
 			struct task_struct, wrr);
-}
-
-static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
-{
-	printk(KERN_DEFAULT "Dequeued task");
-	list_del(&(p->wrr.run_list));
-	dec_nr_running(rq);
-
-	/*May be check if it is multi_core or something*/
-	#ifdef CONFIG_SMP
-	if (rq->nr_running == 0)
-		if (pull_task_from_cpus(rq))
-			;/*Handle error*/
-	#endif /*CONFIG_SMP*/
 }
 
 static void yield_task_wrr(struct rq *rq)
