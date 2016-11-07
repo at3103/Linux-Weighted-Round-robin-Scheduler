@@ -8100,8 +8100,7 @@ SYSCALL_DEFINE1(get_wrr_info, struct wrr_info *, info)
 	int cpu;
 	struct wrr_info ret_info;
 	int cpus = 0;
-	int running = 0;
-	int weight = 0;
+	int cpy_res = 0;
 	for_each_possible_cpu(cpu) {
 		struct rq *rq;
 		rq = cpu_rq(cpu);
@@ -8110,8 +8109,8 @@ SYSCALL_DEFINE1(get_wrr_info, struct wrr_info *, info)
 		cpus++;
 	}
 	ret_info.num_cpus = cpus;
-	copy_to_user(info, &ret_info, sizeof(struct wrr_info));
-	return 0;
+	cpy_res = copy_to_user(info, &ret_info, sizeof(struct wrr_info));
+	return cpy_res;
 }
 
 static int is_root(void)

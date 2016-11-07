@@ -28,9 +28,8 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	int weight)
 {
 	printk(KERN_DEFAULT "Enqueued task i");
-	struct list_head wrr_q;
-
 	p->wrr.weight = weight;
+	rq->wrr.total_weight += weight;
 	p->wrr.time_slice = WRR_TIMESLICE * (weight + 1);
 	INIT_LIST_HEAD(&p->wrr.run_list);
 	list_add_tail(&p->wrr.run_list, &rq->wrr.queue);
@@ -42,7 +41,7 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	printk(KERN_DEFAULT "Dequeued task");
 	list_del(&(p->wrr.run_list));
 	dec_nr_running(rq);
-
+	rq->wrr.total_weight -= p->wrr.weight;
 	/*May be check if it is multi_core or something*/
 	#ifdef CONFIG_SMP
 	if (rq->nr_running == 0)
@@ -64,9 +63,8 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	printk(KERN_DEFAULT "\nEnqueued task %d", (int)p->pid);
 	int weight = wrr_weight;
-
+	printk(KERN_DEFAULT "\nEnqueued task %d", (int)p->pid);
 	if (!should_boost(p)) {
 		weight = 0;
 	}
@@ -83,9 +81,8 @@ struct task_struct *_find_container(struct list_head *cursor)
 
 static void yield_task_wrr(struct rq *rq)
 {
-	printk(KERN_DEFAULT "Yield task");
 	struct task_struct *curr = rq->curr;
-
+	printk(KERN_DEFAULT "Yield task");
 	dequeue_task_wrr(rq, curr, 0);
 	enqueue_task_wrr(rq, curr, 0);
 }
@@ -112,7 +109,6 @@ static void check_preempt_curr_wrr(
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
 	struct task_struct *next = NULL;
-	int i;
 	printk(KERN_DEFAULT "Pick task");
 	if (!list_empty(&(rq->wrr.queue)))
 		next = _find_container(rq->wrr.queue.next);
