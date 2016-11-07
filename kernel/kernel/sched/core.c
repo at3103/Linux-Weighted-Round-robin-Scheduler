@@ -1706,7 +1706,7 @@ void sched_fork(struct task_struct *p)
 
 	if (task_has_wrr_policy(p))
 		p->sched_class = &sched_wrr_class;
-	if (!rt_prio(p->prio))
+	else if (!rt_prio(p->prio))
 		p->sched_class = &fair_sched_class;
 	/* TODO: change to sched_wrr_class */
 
