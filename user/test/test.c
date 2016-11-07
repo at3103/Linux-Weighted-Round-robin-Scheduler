@@ -13,10 +13,11 @@ int main(void)
 		sched_setscheduler(0, 6, &param),
 		strerror(errno)
 	);
-	printf("Scheduler: %d", sched_getscheduler(0));
 	int i = 1;
 	while (1) {
-		if (i == 0) {
+		fork();
+		printf("Scheduler: %d\n", sched_getscheduler(0));
+		if (i == 10) {
 			printf("ab");
 			exit(0);
 		}
