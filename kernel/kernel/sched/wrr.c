@@ -197,6 +197,9 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 			break;
 		}
 
+		WARN_ON(p == src_rq->curr);
+		WARN_ON(!p->on_rq);
+
 		/*Gets the next task from the run queue
 		*of the presently iterating cpu
 		*/
