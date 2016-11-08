@@ -178,6 +178,9 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 	if (cur_rq->nr_running > 0)
 		return ret;
 
+	if (p->nr_cpus_allowed == 1)
+		return ret;
+
 	for_each_cpu(cpu, cur_rq->rd->rto_mask) {
 
 		if (cpu == cur_cpu)
@@ -227,6 +230,9 @@ const struct sched_class sched_wrr_class = {
 	.yield_task             = yield_task_wrr,
 	.yield_to_task          = yield_to_task_wrr,
 	.check_preempt_curr     = check_preempt_curr_wrr,
+#ifdef CONFIG_SMP
+	.select_task_rq			= select_task_cpu_wrr,
+#endif
 	.pick_next_task         = pick_next_task_wrr,
 	.put_prev_task          = put_prev_task_wrr,
 	.set_curr_task          = set_curr_task_wrr,
