@@ -71,6 +71,32 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	enqueue_task_wrr_internal(rq, p, weight, flags);
 }
 
+static int
+select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
+{
+	int cur_cpu = task_cpu(p), cpu, new_cpu;
+	struct rq *rq = cpu_rq(cur_cpu), *tmp_rq;
+	int low_weight = rq->wrr.total_weight;
+
+	new_cpu = cur_cpu;
+
+	if (p->nr_cpus_allowed == 1)
+		return cur_cpu;
+
+	rcu_read_lock();
+	for_each_cpu(cpu, rq->rd->rto_mask) {
+		tmp_rq = cpu_rq(cpu);
+
+		if (tmp_rq->wrr.total_weight < low_weight) {
+			low_weight = tmp_rq->wrr.total_weight;
+			new_cpu = cpu;
+		}
+
+	}
+
+	rcu_read_unlock();
+	return new_cpu;
+}
 
 struct task_struct *_find_container(struct list_head *cursor)
 {
@@ -186,7 +212,7 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 		if (cpu == cur_cpu)
 			continue;
 
-		src_rq = cur_rq;
+		src_rq = cpu_rq(cpu);
 
 		double_lock_balance(cur_rq, src_rq);
 
@@ -231,7 +257,7 @@ const struct sched_class sched_wrr_class = {
 	.yield_to_task          = yield_to_task_wrr,
 	.check_preempt_curr     = check_preempt_curr_wrr,
 #ifdef CONFIG_SMP
-	.select_task_rq			= select_task_cpu_wrr,
+	.select_task_rq			= select_task_rq_wrr,
 #endif
 	.pick_next_task         = pick_next_task_wrr,
 	.put_prev_task          = put_prev_task_wrr,
