@@ -27,7 +27,6 @@ static void
 enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 	int weight)
 {
-	printk(KERN_DEFAULT "Enqueued task i");
 	p->wrr.weight = weight;
 	rq->wrr.total_weight += weight;
 	p->wrr.time_slice = WRR_TIMESLICE * (weight + 1);
@@ -38,15 +37,14 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	printk(KERN_DEFAULT "Dequeued task");
 	list_del(&(p->wrr.run_list));
 	dec_nr_running(rq);
 	rq->wrr.total_weight -= p->wrr.weight;
 	/*May be check if it is multi_core or something*/
 	#ifdef CONFIG_SMP
-	if (rq->nr_running == 0)
-		if (pull_task_from_cpus(rq))
-			;/*Handle error*/
+	//if (rq->nr_running == 0)
+	//	if (pull_task_from_cpus(rq))
+	//		;/*Handle error*/
 	#endif /*CONFIG_SMP*/
 }
 
@@ -64,7 +62,6 @@ static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	int weight = wrr_weight;
-	printk(KERN_DEFAULT "\nEnqueued task %d", (int)p->pid);
 	if (!should_boost(p)) {
 		weight = 0;
 	}
@@ -135,7 +132,6 @@ static void check_preempt_curr_wrr(
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
 {
 	struct task_struct *next = NULL;
-	printk(KERN_DEFAULT "Pick task");
 	if (!list_empty(&(rq->wrr.queue)))
 		next = _find_container(rq->wrr.queue.next);
 	return next;
@@ -143,19 +139,16 @@ static struct task_struct *pick_next_task_wrr(struct rq *rq)
 
 static void put_prev_task_wrr(struct rq *rq, struct task_struct *p)
 {
-	printk(KERN_DEFAULT "Put task");
 
 }
 
 static void set_curr_task_wrr(struct rq *rq)
 {
-	printk(KERN_DEFAULT "Set task");
 
 }
 
 static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 {
-	printk(KERN_DEFAULT "Tick task");
 	if (--p->wrr.time_slice)
 		return;
 	timeslice_end(rq, p, queued);
@@ -163,7 +156,6 @@ static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 
 static void task_fork_wrr(struct task_struct *p)
 {
-	printk(KERN_DEFAULT "Fork task");
 
 }
 
