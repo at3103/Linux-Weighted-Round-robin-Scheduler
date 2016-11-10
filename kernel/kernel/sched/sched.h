@@ -2,6 +2,7 @@
 #include <linux/sched.h>
 #include <linux/sched/sysctl.h>
 #include <linux/sched/rt.h>
+#include <linux/sched/wrr.h>
 #include <linux/mutex.h>
 #include <linux/spinlock.h>
 #include <linux/stop_machine.h>
@@ -82,9 +83,21 @@ static inline int rt_policy(int policy)
 	return policy == SCHED_FIFO || policy == SCHED_RR;
 }
 
+static inline int wrr_policy(int policy)
+{
+	if (policy == SCHED_WRR)
+		return 1;
+	return 0;
+}
+
 static inline int task_has_rt_policy(struct task_struct *p)
 {
 	return rt_policy(p->policy);
+}
+
+static inline int task_has_wrr_policy(struct task_struct *p)
+{
+	return wrr_policy(p->policy);
 }
 
 /*
@@ -111,6 +124,7 @@ extern struct mutex sched_domains_mutex;
 
 struct cfs_rq;
 struct rt_rq;
+struct wrr_rq;
 
 extern struct list_head task_groups;
 
@@ -330,6 +344,12 @@ static inline int rt_bandwidth_enabled(void)
 	return sysctl_sched_rt_runtime >= 0;
 }
 
+struct wrr_rq {
+	int total_weight;
+	struct load_weight load;
+	struct list_head queue;
+};
+
 /* Real-Time classes' related field in a runqueue: */
 struct rt_rq {
 	struct rt_prio_array active;
@@ -427,6 +447,7 @@ struct rq {
 
 	struct cfs_rq cfs;
 	struct rt_rq rt;
+	struct wrr_rq wrr;
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	/* list of leaf cfs_rq on this cpu: */
@@ -1263,6 +1284,7 @@ struct sched_class {
 extern const struct sched_class stop_sched_class;
 extern const struct sched_class rt_sched_class;
 extern const struct sched_class fair_sched_class;
+extern const struct sched_class sched_wrr_class;
 extern const struct sched_class idle_sched_class;
 
 
@@ -1565,6 +1587,9 @@ extern void print_rt_stats(struct seq_file *m, int cpu);
 
 extern void init_cfs_rq(struct cfs_rq *cfs_rq);
 extern void init_rt_rq(struct rt_rq *rt_rq, struct rq *rq);
+extern void init_wrr_rq(struct wrr_rq *rt_rq, struct rq *rq);
+
+extern void set_wrr_weight(int weight);
 
 extern void cfs_bandwidth_usage_inc(void);
 extern void cfs_bandwidth_usage_dec(void);
