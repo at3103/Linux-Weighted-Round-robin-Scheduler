@@ -8105,7 +8105,7 @@ SYSCALL_DEFINE1(get_wrr_info, struct wrr_info *, info)
 	for_each_possible_cpu(cpu) {
 		struct rq *rq;
 		rq = cpu_rq(cpu);
-		ret_info.nr_running[cpu] = rq->nr_running;
+		ret_info.nr_running[cpu] = rq->wrr.nr_running;
 		ret_info.total_weight[cpu] = rq->wrr.total_weight;
 		cpus++;
 	}

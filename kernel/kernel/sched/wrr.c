@@ -5,11 +5,11 @@
 #include "sched.h"
 #include <linux/printk.h>
 
-int wrr_weight = MAX_WRR_WEIGHT - 1;
+int wrr_weight = MAX_WRR_WEIGHT;
 
 void set_wrr_weight(int weight)
 {
-	wrr_weight = weight - 1;
+	wrr_weight = weight;
 }
 static int pull_task_from_cpus(struct rq *cur_rq);
 
@@ -29,25 +29,27 @@ enqueue_task_wrr_internal(struct rq *rq, struct task_struct *p, int flags,
 {
 	p->wrr.weight = weight;
 	rq->wrr.total_weight += weight;
-	p->wrr.time_slice = WRR_TIMESLICE * (weight + 1);
+	p->wrr.time_slice = WRR_TIMESLICE * weight;
 	INIT_LIST_HEAD(&p->wrr.run_list);
 	list_add_tail(&p->wrr.run_list, &rq->wrr.queue);
 	inc_nr_running(rq);
+	rq->wrr.nr_running++;
 }
 
 static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	list_del(&(p->wrr.run_list));
 	dec_nr_running(rq);
+	rq->wrr.nr_running--;
 	rq->wrr.total_weight -= p->wrr.weight;
 	/*May be check if it is multi_core or something*/
 	#ifdef CONFIG_SMP
 	if (rq->nr_running == 0) {
-		if (pull_task_from_cpus(rq))/*May be not needed*/
-			printk("\nPulled Task\n");
-		else
+//		if (pull_task_from_cpus(rq))/*May be not needed*/
+//			printk("\nPulled Task\n");
+//		else
 			/*debug*/
-			printk("\nnot able to pull\n");/*Handle error*/
+//			printk("\nnot able to pull\n");/*Handle error*/
 	}
 	#endif /*CONFIG_SMP*/
 }
@@ -55,9 +57,9 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 {
 	dequeue_task_wrr(rq, p, 0);
-	if (p->wrr.weight > 0)
+	if (p->wrr.weight > 1)
 		--p->wrr.weight;
-	p->wrr.time_slice = WRR_TIMESLICE * (p->wrr.weight + 1);
+	p->wrr.time_slice = WRR_TIMESLICE * p->wrr.weight;
 	enqueue_task_wrr_internal(rq, p, 0, p->wrr.weight);
 	set_tsk_need_resched(p);
 }
@@ -67,9 +69,9 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	int weight = wrr_weight;
 	if (!should_boost(p)) {
-		weight = 0;
+		weight = 1;
 	}
-	enqueue_task_wrr_internal(rq, p, weight, flags);
+	enqueue_task_wrr_internal(rq, p, flags, weight);
 }
 
 static int
