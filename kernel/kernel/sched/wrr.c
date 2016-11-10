@@ -45,11 +45,11 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	/*May be check if it is multi_core or something*/
 	#ifdef CONFIG_SMP
 	if (rq->nr_running == 0) {
-//		if (pull_task_from_cpus(rq))/*May be not needed*/
-//			printk("\nPulled Task\n");
-//		else
+		if (pull_task_from_cpus(rq))/*May be not needed*/
+			printk("\nPulled Task\n");
+		else
 			/*debug*/
-//			printk("\nnot able to pull\n");/*Handle error*/
+			printk("\nnot able to pull\n");/*Handle error*/
 	}
 	#endif /*CONFIG_SMP*/
 }
