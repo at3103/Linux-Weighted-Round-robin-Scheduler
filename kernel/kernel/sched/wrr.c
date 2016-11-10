@@ -101,7 +101,7 @@ select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
 	return new_cpu;
 }
 
-struct task_struct *_find_container(struct list_head *cursor)
+static struct task_struct *_find_container(struct list_head *cursor)
 {
 	return container_of(list_entry(cursor, struct sched_wrr_entity,
 					run_list),
