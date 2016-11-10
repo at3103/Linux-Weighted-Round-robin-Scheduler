@@ -42,9 +42,13 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	rq->wrr.total_weight -= p->wrr.weight;
 	/*May be check if it is multi_core or something*/
 	#ifdef CONFIG_SMP
-	//if (rq->nr_running == 0)
-	//	if (pull_task_from_cpus(rq))
-	//		;/*Handle error*/
+	if (rq->nr_running == 0) {
+		if (pull_task_from_cpus(rq))/*May be not needed*/
+			printk("\nPulled Task\n");
+		else
+			/*debug*/
+			printk("\nnot able to pull\n");/*Handle error*/
+	}
 	#endif /*CONFIG_SMP*/
 }
 
@@ -196,8 +200,6 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 	if (cur_rq->nr_running > 0)
 		return ret;
 
-	if (p->nr_cpus_allowed == 1)
-		return ret;
 
 	for_each_cpu(cpu, cur_rq->rd->rto_mask) {
 
@@ -218,23 +220,30 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 			break;
 		}
 
-		WARN_ON(p == src_rq->curr);
-		WARN_ON(!p->on_rq);
 
 		/*Gets the next task from the run queue
 		*of the presently iterating cpu
 		*/
 		p = pick_next_task_wrr(src_rq);
-		ret = 1;
+		if (p) {
+			WARN_ON(p == src_rq->curr);
+			WARN_ON(!p->on_rq);
 
-		/*Deactivates, dequeues from the old cpu
-		*and enqueues to the new cpu
-		*/
-		deactivate_task(src_rq, p, 0);
-		set_task_cpu(p, cur_cpu);
-		activate_task(cur_rq, p, 0);
-		double_unlock_balance(cur_rq, src_rq);
-		break;
+			if (p->nr_cpus_allowed == 1) {
+				double_unlock_balance(cur_rq, src_rq);
+				continue;
+			}
+			ret = 1;
+
+			/*Deactivates, dequeues from the old cpu
+			*and enqueues to the new cpu
+			*/
+			deactivate_task(src_rq, p, 0);
+			set_task_cpu(p, cur_cpu);
+			activate_task(cur_rq, p, 0);
+			double_unlock_balance(cur_rq, src_rq);
+			break;
+		}
 	}
 
 	return ret;
