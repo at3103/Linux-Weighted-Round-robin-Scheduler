@@ -346,6 +346,7 @@ static inline int rt_bandwidth_enabled(void)
 
 struct wrr_rq {
 	int total_weight;
+	int nr_running;
 	struct load_weight load;
 	struct list_head queue;
 };
