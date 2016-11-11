@@ -46,7 +46,7 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 
 	#ifdef CONFIG_SMP
 	if (rq->wrr.nr_running == 0)
-		if (pull_task_from_cpus(rq))
+		pull_task_from_cpus(rq);
 	#endif /*CONFIG_SMP*/
 }
 
@@ -94,7 +94,6 @@ select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
 
 	rcu_read_unlock();
 
-	if (new_cpu != cur_cpu)
 	return new_cpu;
 }
 
@@ -127,7 +126,6 @@ static void check_preempt_curr_wrr(
 	int flags
 )
 {
-	//resched_task(rq->curr);
 }
 
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
