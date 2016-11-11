@@ -61,13 +61,15 @@ static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
-	int weight = wrr_weight;
-	if (!p->wrr.was_boosted) {
-		if (!should_boost(p))
-			weight = 1;
+	if (!p->wrr.was_boosted || p->wrr.weight <= 0 ||
+		p->wrr.weight > wrr_weight) {
+		if (should_boost(p))
+			p->wrr.weight = wrr_weight;
+		else
+			p->wrr.weight = 1;
 		p->wrr.was_boosted = 1;
 	}
-	enqueue_task_wrr_internal(rq, p, flags, weight);
+	enqueue_task_wrr_internal(rq, p, flags, p->wrr.weight);
 }
 
 static int
@@ -138,12 +140,10 @@ static struct task_struct *pick_next_task_wrr(struct rq *rq)
 
 static void put_prev_task_wrr(struct rq *rq, struct task_struct *p)
 {
-
 }
 
 static void set_curr_task_wrr(struct rq *rq)
 {
-
 }
 
 static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
@@ -155,7 +155,7 @@ static void task_tick_wrr(struct rq *rq, struct task_struct *p, int queued)
 
 static void task_fork_wrr(struct task_struct *p)
 {
-
+	p->wrr.was_boosted = 0;
 }
 
 static void switched_from_wrr(struct rq *this_rq, struct task_struct *task)
