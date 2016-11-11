@@ -41,6 +41,8 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	dec_nr_running(rq);
 	rq->wrr.nr_running--;
 	rq->wrr.total_weight -= p->wrr.weight;
+	if (p->wrr.weight > 1)
+		p->wrr.weight = p->wrr.weight - 1;
 
 	#ifdef CONFIG_SMP
 	if (rq->nr_running == 0)
@@ -51,8 +53,6 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 static void timeslice_end(struct rq *rq, struct task_struct *p, int queued)
 {
 	dequeue_task_wrr(rq, p, 0);
-	if (p->wrr.weight > 1)
-		--p->wrr.weight;
 	p->wrr.time_slice = WRR_TIMESLICE * p->wrr.weight;
 	enqueue_task_wrr_internal(rq, p, 0, p->wrr.weight);
 	set_tsk_need_resched(p);

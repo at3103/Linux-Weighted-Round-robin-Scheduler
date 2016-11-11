@@ -27,7 +27,7 @@ int main(void)
 	for(j = 0; j < info.num_cpus; j++) {
 		printf("CPU %d has %d processes with total weight %d\n", j, (int)info.nr_running[j], (int)info.total_weight[j]);
 	}
-	syscall(245, 1000);
+	syscall(245, 10);
 	while(1) {
 	syscall(244, &info);
 	for(j = 0; j < info.num_cpus; j++) {
