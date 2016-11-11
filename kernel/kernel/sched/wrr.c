@@ -3,7 +3,6 @@
  */
 
 #include "sched.h"
-#include <linux/printk.h>
 
 int wrr_weight = MAX_WRR_WEIGHT;
 
@@ -42,15 +41,10 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	dec_nr_running(rq);
 	rq->wrr.nr_running--;
 	rq->wrr.total_weight -= p->wrr.weight;
-	/*May be check if it is multi_core or something*/
+
 	#ifdef CONFIG_SMP
-	if (rq->nr_running == 0) {
-		if (pull_task_from_cpus(rq))/*May be not needed*/
-			printk("\nPulled Task\n");
-		else
-			/*debug*/
-			printk("\nnot able to pull\n");/*Handle error*/
-	}
+	if (rq->nr_running == 0)
+		pull_task_from_cpus(rq);
 	#endif /*CONFIG_SMP*/
 }
 
@@ -111,7 +105,6 @@ static struct task_struct *_find_container(struct list_head *cursor)
 static void yield_task_wrr(struct rq *rq)
 {
 	struct task_struct *curr = rq->curr;
-	printk(KERN_DEFAULT "Yield task");
 	dequeue_task_wrr(rq, curr, 0);
 	enqueue_task_wrr(rq, curr, 0);
 }
@@ -122,7 +115,6 @@ static bool yield_to_task_wrr(
 	bool preempt
 )
 {
-	printk(KERN_DEFAULT "Yield to task");
 	return 0;
 }
 
@@ -167,13 +159,11 @@ static void task_fork_wrr(struct task_struct *p)
 
 static void switched_from_wrr(struct rq *this_rq, struct task_struct *task)
 {
-	printk(KERN_DEFAULT "Switch from task");
 
 }
 
 static void switched_to_wrr(struct rq *this_rq, struct task_struct *task)
 {
-	printk(KERN_DEFAULT "Switch to task");
 
 }
 
@@ -183,13 +173,11 @@ static void prio_changed_wrr(
 	int oldprio
 )
 {
-	printk(KERN_DEFAULT "Prio task");
 
 }
 
 static unsigned int get_rr_interval_wrr(struct rq *rq, struct task_struct *task)
 {
-	printk(KERN_DEFAULT "Interval task");
 	return 0;
 }
 
@@ -199,7 +187,7 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 	struct rq *src_rq;
 	struct task_struct *p;
 
-	if (cur_rq->nr_running > 0)
+	if (cur_rq->wrr.nr_running > 0)
 		return ret;
 
 
@@ -212,12 +200,12 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 
 		double_lock_balance(cur_rq, src_rq);
 
-		if (src_rq->nr_running < 2) {
+		if (src_rq->wrr.nr_running < 2) {
 			double_unlock_balance(cur_rq, src_rq);
 			continue;
 		}
 
-		if (cur_rq->nr_running > 0) {
+		if (cur_rq->wrr.nr_running > 0) {
 			double_unlock_balance(cur_rq, src_rq);
 			break;
 		}
@@ -246,6 +234,7 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 			double_unlock_balance(cur_rq, src_rq);
 			break;
 		}
+		double_unlock_balance(cur_rq, src_rq);
 	}
 
 	return ret;
