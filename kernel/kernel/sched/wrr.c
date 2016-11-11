@@ -45,8 +45,9 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 		p->wrr.weight = p->wrr.weight - 1;
 
 	#ifdef CONFIG_SMP
-	if (rq->nr_running == 0)
-		pull_task_from_cpus(rq);
+	if (rq->wrr.nr_running == 0)
+		if (pull_task_from_cpus(rq))
+			printk("\n\nSuccess!! Pulled Task\n\n");
 	#endif /*CONFIG_SMP*/
 }
 
@@ -86,9 +87,8 @@ select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
 		return cur_cpu;
 
 	rcu_read_lock();
-	for_each_cpu(cpu, rq->rd->rto_mask) {
+	for_each_possible_cpu(cpu) {
 		tmp_rq = cpu_rq(cpu);
-
 		if (tmp_rq->wrr.total_weight < low_weight) {
 			low_weight = tmp_rq->wrr.total_weight;
 			new_cpu = cpu;
@@ -97,6 +97,9 @@ select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
 	}
 
 	rcu_read_unlock();
+
+	if (new_cpu != cur_cpu)
+		printk("\nSuccess!! Changed from PC%d to PC%d\n", cur_cpu, new_cpu);
 	return new_cpu;
 }
 
@@ -192,9 +195,10 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 	struct rq *src_rq;
 	struct task_struct *p;
 
-	if (cur_rq->wrr.nr_running > 0)
+	if (cur_rq->wrr.nr_running > 0) {
+		printk("\nThis CPU already got a process\n");
 		return ret;
-
+	}
 
 	for_each_cpu(cpu, cur_rq->rd->rto_mask) {
 
@@ -212,6 +216,7 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 
 		if (cur_rq->wrr.nr_running > 0) {
 			double_unlock_balance(cur_rq, src_rq);
+			printk("\nThis CPU already got a process - inside\n");
 			break;
 		}
 
