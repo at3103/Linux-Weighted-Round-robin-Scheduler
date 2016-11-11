@@ -188,9 +188,8 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 	struct rq *src_rq;
 	struct task_struct *p;
 
-	if (cur_rq->wrr.nr_running > 0) {
+	if (cur_rq->wrr.nr_running > 0)
 		return ret;
-	}
 
 	for_each_cpu(cpu, cur_rq->rd->rto_mask) {
 
