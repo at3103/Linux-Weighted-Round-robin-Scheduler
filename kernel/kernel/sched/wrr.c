@@ -45,7 +45,7 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 		p->wrr.weight = p->wrr.weight - 1;
 
 	#ifdef CONFIG_SMP
-	if (rq->nr_running == 0)
+	if (rq->wrr.nr_running == 0)
 		pull_task_from_cpus(rq);
 	#endif /*CONFIG_SMP*/
 }
@@ -63,11 +63,8 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	int weight = wrr_weight;
 	if (!p->wrr.was_boosted) {
-		if (!should_boost(p)) {
+		if (!should_boost(p))
 			weight = 1;
-		} else {
-			printk("Boosted process %d with %d", (int)p->pid, weight);
-		}
 		p->wrr.was_boosted = 1;
 	}
 	enqueue_task_wrr_internal(rq, p, flags, weight);
@@ -86,9 +83,8 @@ select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
 		return cur_cpu;
 
 	rcu_read_lock();
-	for_each_cpu(cpu, rq->rd->rto_mask) {
+	for_each_possible_cpu(cpu) {
 		tmp_rq = cpu_rq(cpu);
-
 		if (tmp_rq->wrr.total_weight < low_weight) {
 			low_weight = tmp_rq->wrr.total_weight;
 			new_cpu = cpu;
@@ -97,6 +93,7 @@ select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
 	}
 
 	rcu_read_unlock();
+
 	return new_cpu;
 }
 
@@ -129,7 +126,6 @@ static void check_preempt_curr_wrr(
 	int flags
 )
 {
-	//resched_task(rq->curr);
 }
 
 static struct task_struct *pick_next_task_wrr(struct rq *rq)
@@ -194,7 +190,6 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 
 	if (cur_rq->wrr.nr_running > 0)
 		return ret;
-
 
 	for_each_cpu(cpu, cur_rq->rd->rto_mask) {
 
