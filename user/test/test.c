@@ -18,11 +18,6 @@ int main(void)
 	param.sched_priority = 0;
 	int j = 0;
 	struct wrr_info info;
-	syscall(244, &info);
-	for(j = 0; j < info.num_cpus; j++) {
-		printf("CPU %d has %d processes with total weight %d\n", j, (int)info.nr_running[j], (int)info.total_weight[j]);
-	}
-	sleep(10);
 	printf(
 		"Setting sched: %d\n%s\n",
 		sched_setscheduler(0, 6, &param),
@@ -32,5 +27,11 @@ int main(void)
 	for(j = 0; j < info.num_cpus; j++) {
 		printf("CPU %d has %d processes with total weight %d\n", j, (int)info.nr_running[j], (int)info.total_weight[j]);
 	}
+	syscall(245, 1000);
+	while(1) {
+	syscall(244, &info);
+	for(j = 0; j < info.num_cpus; j++) {
+		printf("CPU %d has %d processes with total weight %d\n", j, (int)info.nr_running[j], (int)info.total_weight[j]);
+	}}
 	return 0;
 }
