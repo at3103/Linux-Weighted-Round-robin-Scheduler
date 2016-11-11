@@ -47,7 +47,6 @@ static void dequeue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 	#ifdef CONFIG_SMP
 	if (rq->wrr.nr_running == 0)
 		if (pull_task_from_cpus(rq))
-			printk("\n\nSuccess!! Pulled Task\n\n");
 	#endif /*CONFIG_SMP*/
 }
 
@@ -64,11 +63,8 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	int weight = wrr_weight;
 	if (!p->wrr.was_boosted) {
-		if (!should_boost(p)) {
+		if (!should_boost(p))
 			weight = 1;
-		} else {
-			printk("Boosted process %d with %d", (int)p->pid, weight);
-		}
 		p->wrr.was_boosted = 1;
 	}
 	enqueue_task_wrr_internal(rq, p, flags, weight);
@@ -99,7 +95,6 @@ select_task_rq_wrr(struct task_struct *p, int sd_flags, int wake_flags)
 	rcu_read_unlock();
 
 	if (new_cpu != cur_cpu)
-		printk("\nSuccess!! Changed from PC%d to PC%d\n", cur_cpu, new_cpu);
 	return new_cpu;
 }
 
@@ -196,7 +191,6 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 	struct task_struct *p;
 
 	if (cur_rq->wrr.nr_running > 0) {
-		printk("\nThis CPU already got a process\n");
 		return ret;
 	}
 
@@ -216,7 +210,6 @@ static int pull_task_from_cpus(struct rq *cur_rq)
 
 		if (cur_rq->wrr.nr_running > 0) {
 			double_unlock_balance(cur_rq, src_rq);
-			printk("\nThis CPU already got a process - inside\n");
 			break;
 		}
 
