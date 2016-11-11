@@ -62,8 +62,13 @@ static void
 enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
 	int weight = wrr_weight;
-	if (!should_boost(p)) {
-		weight = 1;
+	if (!p->wrr.was_boosted) {
+		if (!should_boost(p)) {
+			weight = 1;
+		} else {
+			printk("Boosted process %d with %d", (int)p->pid, weight);
+		}
+		p->wrr.was_boosted = 1;
 	}
 	enqueue_task_wrr_internal(rq, p, flags, weight);
 }
