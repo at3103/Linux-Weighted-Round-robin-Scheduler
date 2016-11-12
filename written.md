@@ -22,7 +22,118 @@ Since the weighted round robin scheduler is applied by `init` process and set to
 
 ##### Expected Results
 ```
-Result and comments goes here.
+CPU 1 has 0 processes with total weight 0
+CPU 2 has 0 processes with total weight 0
+CPU 3 has 0 processes with total weight 0
+CPU 4 has 22 processes with total weight 22
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 3 processes with total weight 3
+CPU 4 has 2 processes with total weight 2
+CPU 5 has 3 processes with total weight 3
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 3 processes with total weight 3
+CPU 4 has 3 processes with total weight 3
+CPU 5 has 3 processes with total weight 3
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 3 processes with total weight 3
+CPU 4 has 3 processes with total weight 3
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 3 processes with total weight 3
+CPU 4 has 3 processes with total weight 3
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 4 processes with total weight 4
+CPU 6 has 3 processes with total weight 3
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 4 processes with total weight 4
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 3 processes with total weight 3
+
+*CPU 7 has the least total weight --> Hence, new process gets assigned to it.
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 4 processes with total weight 4
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 4 processes with total weight 4
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 5 processes with total weight 5
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 4 processes with total weight 4
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 5 processes with total weight 5
+CPU 5 has 5 processes with total weight 5
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 4 processes with total weight 4
+
+*Boosted process with weight 10 at CPU 5
+*Once, all it's five processes finishes, it will have zero processes, hence new process gets added to its queue.
+CPU 0 has 4 processes with total weight 4
+CPU 1 has 4 processes with total weight 4
+CPU 2 has 3 processes with total weight 5
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 2 processes with total weight 9
+CPU 5 has 1 processes with total weight 9
+CPU 6 has 3 processes with total weight 3
+CPU 7 has 3 processes with total weight 3
+
+
+CPU 0 has 4 processes with total weight 4
+CPU 1 has 4 processes with total weight 12
+CPU 2 has 3 processes with total weight 3
+CPU 3 has 5 processes with total weight 5
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 2 processes with total weight 2
+CPU 7 has 2 processes with total weight 2
+
 ```
 ### Test on different weights
 The weight controls the frequency of reschedule. Generally speaking, larger weight discourages multi-process while smaller weight magnifies reschedule overhead.
@@ -40,11 +151,187 @@ The load balancing mechanism is expected to allocate workload evenly across mult
 
 ##### Steps of Test
 * Run test program to keep monitoring wrr workload allocation.
-* Open Chrome, which will spawn several processes simutaniously.
+* Spawn multiple processes in the test program. We can see the load getting balanced between the cpus.
 
 ##### Expected Results
 ```
-Result and comments goes here.
+root@HNKIW-Q:/data/misc # ./test
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 0 processes with total weight 0
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 0 processes with total weight 0
+
+*Example where the new processes get alloted evenly
+
+CPU 0 has 3 processes with total weight 3
+CPU 1 has 3 processes with total weight 3
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 3 processes with total weight 3
+CPU 4 has 2 processes with total weight 2
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 2 processes with total weight 2
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 2 processes with total weight 2
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 2 processes with total weight 2
+CPU 4 has 2 processes with total weight 2
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 5 processes with total weight 5
+
+CPU 0 has 5 processes with total weight 5
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 2 processes with total weight 2
+CPU 4 has 3 processes with total weight 3
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 5 processes with total weight 5
+CPU 7 has 2 processes with total weight 2
+
+*Load balancing at work
+
+CPU 0 has 3 processes with total weight 3
+CPU 1 has 2 processes with total weight 2
+CPU 2 has 3 processes with total weight 3
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 3 processes with total weight 3
+CPU 5 has 3 processes with total weight 3
+CPU 6 has 3 processes with total weight 3
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 4 processes with total weight 4
+CPU 1 has 2 processes with total weight 2
+CPU 2 has 4 processes with total weight 4
+CPU 3 has 4 processes with total weight 4
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 4 processes with total weight 4
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 4 processes with total weight 4
+
+CPU 0 has 5 processes with total weight 11
+CPU 1 has 11 processes with total weight 11
+CPU 2 has 3 processes with total weight 3
+CPU 3 has 3 processes with total weight 3
+CPU 4 has 10 processes with total weight 10
+CPU 5 has 3 processes with total weight 3
+CPU 6 has 2 processes with total weight 2
+CPU 7 has 1 processes with total weight 1
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 2 processes with total weight 2
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 2 processes with total weight 2
+CPU 4 has 2 processes with total weight 2
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 1 processes with total weight 1
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 1 processes with total weight 1
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 2 processes with total weight 2
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 55 processes with total weight 55
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 24 processes with total weight 24
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 24 processes with total weight 24
+
+CPU 0 has 3 processes with total weight 3
+CPU 1 has 0 processes with total weight 0
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 18 processes with total weight 18
+CPU 5 has 90 processes with total weight 90
+CPU 6 has 90 processes with total weight 90
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 133 processes with total weight 133
+CPU 1 has 1 processes with total weight 1
+CPU 3 has 131 processes with total weight 131
+CPU 4 has 48 processes with total weight 48
+CPU 5 has 5 processes with total weight 5
+CPU 6 has 22 processes with total weight 22
+CPU 7 has 132 processes with total weight 132
+
+CPU 0 has 213 processes with total weight 213
+CPU 1 has 213 processes with total weight 213
+CPU 2 has 213 processes with total weight 213
+CPU 3 has 213 processes with total weight 213
+CPU 4 has 89 processes with total weight 89
+CPU 5 has 213 processes with total weight 213
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 135 processes with total weight 135
+
+CPU 0 has 108 processes with total weight 108
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 108 processes with total weight 108
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 107 processes with total weight 107
+CPU 7 has 81 processes with total weight 81
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 110 processes with total weight 110
+CPU 3 has 0 processes with total weight 0
+CPU 4 has 1 processes with total weight 1
+CPU 5 has 110 processes with total weight 110
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 57 processes with total weight 57
+CPU 1 has 99 processes with total weight 99
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 165 processes with total weight 165
+CPU 4 has 38 processes with total weight 38
+CPU 5 has 5 processes with total weight 5
+CPU 6 has 299 processes with total weight 299
+CPU 7 has 76 processes with total weight 76
+
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 42 processes with total weight 42
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 1 processes with total weight 1
+
+CPU 0 has 48 processes with total weight 48
+CPU 1 has 239 processes with total weight 239
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 239 processes with total weight 239
+CPU 4 has 39 processes with total weight 39
+CPU 5 has 239 processes with total weight 239
+CPU 6 has 2 processes with total weight 2
+CPU 7 has 239 processes with total weight 239
+
+* New processes have been just spawned on CPU0, hence the overload. This would be reallocated 
+as soon as select_task is called by core.c
+
+CPU 0 has 101 processes with total weight 101
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 6 processes with total weight 6
+CPU 3 has 6 processes with total weight 6
+CPU 4 has 6 processes with total weight 6
+CPU 5 has 7 processes with total weight 7
+CPU 6 has 6 processes with total weight 6
+CPU 7 has 6 processes with total weight 6
+
 ```
 ### Test heavy load
 Large number of processes is expected to slow down the system, but should not result in system crash.
