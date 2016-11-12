@@ -493,3 +493,38 @@ Large number of processes is expected to slow down the system, but should not re
 ```
 Result and comments goes here.
 ```
+CPU 0 has 213 processes with total weight 213
+CPU 1 has 213 processes with total weight 213
+CPU 2 has 213 processes with total weight 213
+CPU 3 has 213 processes with total weight 213
+CPU 4 has 89 processes with total weight 89
+CPU 5 has 213 processes with total weight 213
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 135 processes with total weight 135
+
+CPU 0 has 108 processes with total weight 108
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 108 processes with total weight 108
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 107 processes with total weight 107
+CPU 7 has 81 processes with total weight 81
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 110 processes with total weight 110
+CPU 3 has 0 processes with total weight 0
+CPU 4 has 1 processes with total weight 1
+CPU 5 has 110 processes with total weight 110
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 57 processes with total weight 57
+CPU 1 has 99 processes with total weight 99
+CPU 2 has 2 processes with total weight 2
+CPU 3 has 165 processes with total weight 165
+CPU 4 has 38 processes with total weight 38
+CPU 5 has 5 processes with total weight 5
+CPU 6 has 299 processes with total weight 299
+CPU 7 has 76 processes with total weight 76
