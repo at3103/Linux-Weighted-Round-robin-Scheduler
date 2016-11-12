@@ -134,6 +134,42 @@ CPU 5 has 2 processes with total weight 2
 CPU 6 has 2 processes with total weight 2
 CPU 7 has 2 processes with total weight 2
 
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 3 processes with total weight 3
+CPU 2 has 1 processes with total weight 2
+CPU 3 has 2 processes with total weight 2
+CPU 4 has 2 processes with total weight 2
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 1 processes with total weight 84
+CPU 7 has 1 processes with total weight 1
+
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 1 processes with total weight 47
+CPU 2 has 1 processes with total weight 87
+CPU 3 has 1 processes with total weight 34
+CPU 4 has 1 processes with total weight 1
+CPU 5 has 1 processes with total weight 91
+CPU 6 has 4 processes with total weight 4
+CPU 7 has 1 processes with total weight 49
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 0 processes with total weight 0
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 1 processes with total weight 1
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 3 processes with total weight 97
+CPU 1 has 1 processes with total weight 1
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 1 processes with total weight 1
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 0 processes with total weight 0
+
 ```
 ### Test on different weights
 The weight controls the frequency of reschedule. Generally speaking, larger weight discourages multi-process while smaller weight magnifies reschedule overhead.
@@ -144,6 +180,53 @@ The weight controls the frequency of reschedule. Generally speaking, larger weig
 
 ##### Expected Results
 ```
+CPU 0 has 9 processes with total weight 256
+CPU 1 has 0 processes with total weight 0
+CPU 2 has 0 processes with total weight 0
+CPU 3 has 0 processes with total weight 0
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 3 processes with total weight 3
+CPU 2 has 3 processes with total weight 3
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 3 processes with total weight 3
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 1 processes with total weight 217
+CPU 7 has 1 processes with total weight 1
+CPU 0 has 1 processes with total weight 135
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 2 processes with total weight 171
+CPU 2 has 3 processes with total weight 197
+CPU 3 has 2 processes with total weight 2
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 1 processes with total weight 100
+CPU 1 has 2 processes with total weight 171
+CPU 2 has 3 processes with total weight 197
+CPU 3 has 3 processes with total weight 202
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 2 processes with total weight 2
+CPU 7 has 3 processes with total weight 3
+
+CPU 0 has 1 processes with total weight 100
+CPU 1 has 2 processes with total weight 171
+CPU 2 has 3 processes with total weight 197
+CPU 3 has 3 processes with total weight 202
+CPU 4 has 4 processes with total weight 4
+CPU 5 has 2 processes with total weight 2
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 3 processes with total weight 3
+
 
 root@HNKIW-Q:/data/misc # ./test 200                                           
 Changed weight to 200
