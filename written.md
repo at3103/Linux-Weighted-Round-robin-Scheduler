@@ -144,7 +144,73 @@ The weight controls the frequency of reschedule. Generally speaking, larger weig
 
 ##### Expected Results
 ```
-Result and comments goes here.
+
+root@HNKIW-Q:/data/misc # ./test 200                                           
+Changed weight to 200
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 1 processes with total weight 200
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 0 processes with total weight 0
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 1 processes with total weight 196
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 1 processes with total weight 200
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 0 processes with total weight 0
+
+CPU 0 has 2 processes with total weight 2
+CPU 1 has 1 processes with total weight 195
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 1 processes with total weight 198
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 1 processes with total weight 1
+CPU 7 has 0 processes with total weight 0
+
+root@HNKIW-Q:/data/misc # ./test 100                                           
+Changed weight to 100
+
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 0 processes with total weight 0
+CPU 2 has 0 processes with total weight 0
+CPU 3 has 1 processes with total weight 1
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 1 processes with total weight 1
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 1 processes with total weight 88
+
+CPU 0 has 1 processes with total weight 1
+CPU 1 has 0 processes with total weight 0
+CPU 2 has 1 processes with total weight 1
+CPU 3 has 1 processes with total weight 71
+CPU 4 has 1 processes with total weight 1
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 1 processes with total weight 1
+CPU 0 has 0 processes with total weight 0
+
+root@HNKIW-Q:/data/misc # ./test 100                                           
+Changed weight to 100
+
+CPU 0 has 9 processes with total weight 107
+CPU 1 has 0 processes with total weight 0
+CPU 2 has 0 processes with total weight 0
+CPU 3 has 0 processes with total weight 0
+CPU 4 has 0 processes with total weight 0
+CPU 5 has 0 processes with total weight 0
+CPU 6 has 0 processes with total weight 0
+CPU 7 has 0 processes with total weight 0
+
+
+
 ```
 ### Test load balancing
 The load balancing mechanism is expected to allocate workload evenly across multiple cores, even under scenarios where non-trivial number of processes are spawned.
