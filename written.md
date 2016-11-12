@@ -491,8 +491,6 @@ Large number of processes is expected to slow down the system, but should not re
 
 ##### Expected Results
 ```
-Result and comments goes here.
-```
 CPU 0 has 213 processes with total weight 213
 CPU 1 has 213 processes with total weight 213
 CPU 2 has 213 processes with total weight 213
@@ -528,3 +526,5 @@ CPU 4 has 38 processes with total weight 38
 CPU 5 has 5 processes with total weight 5
 CPU 6 has 299 processes with total weight 299
 CPU 7 has 76 processes with total weight 76
+```
+
