@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sched.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
@@ -12,26 +13,22 @@ struct wrr_info {
         int total_weight[MAX_CPUS];
 };
 
-int main(void)
+int main(int argc, char **argv)
 {
-	struct sched_param param;
-	param.sched_priority = 0;
-	int j = 0;
 	struct wrr_info info;
-	printf(
-		"Setting sched: %d\n%s\n",
-		sched_setscheduler(0, 6, &param),
-		strerror(errno)
-	);
-	syscall(244, &info);
-	for(j = 0; j < info.num_cpus; j++) {
-		printf("CPU %d has %d processes with total weight %d\n", j, (int)info.nr_running[j], (int)info.total_weight[j]);
+	int j = 0;
+
+	if (argc == 1) {
+		while(1) {
+			syscall(244, &info);
+			for(j = 0; j < info.num_cpus; j++)
+				printf("CPU %d has %d processes with total weight %d\n",
+				       j, (int)info.nr_running[j], (int)info.total_weight[j]);
+			sleep(1);
+		}
+	} else {
+		j = atoi(argv[1]);
+		syscall(245, j);
 	}
-	syscall(245, 10);
-	while(1) {
-	syscall(244, &info);
-	for(j = 0; j < info.num_cpus; j++) {
-		printf("CPU %d has %d processes with total weight %d\n", j, (int)info.nr_running[j], (int)info.total_weight[j]);
-	}}
 	return 0;
 }
